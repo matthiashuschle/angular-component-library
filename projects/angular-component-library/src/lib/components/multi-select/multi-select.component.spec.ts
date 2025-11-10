@@ -57,4 +57,75 @@ describe('MultiSelectComponent', () => {
             expect(input).toBeFalsy();
         }
     });
+
+    // New test case for a different input value to items
+    it('should display correct items when provided', () => {
+        const newItems = ['Option 1', 'Option 2', 'Option 3'];
+        fixture.componentRef.setInput('items', newItems);
+        fixture.detectChanges();
+
+        const menu = fixture.debugElement.query(By.css('.menu'));
+        expect(menu).toBeTruthy();
+        // console.warn(menu.nativeElement)
+        const [selectedList, unselectedList] = menu.queryAll(By.css('ul'))
+        expect(selectedList).toBeTruthy();
+        expect(unselectedList).toBeTruthy();
+        const selectedItems = selectedList.queryAll(By.css('li'));
+        const unselectedItems = unselectedList.queryAll(By.css('li'));
+        expect(selectedItems.length).toEqual(0);
+        expect(unselectedItems.length).toEqual(3);
+
+        unselectedItems.forEach((item, index) => {
+            expect(item.nativeElement.textContent.trim()).toEqual(newItems[index]);
+        })
+    });
+
+    // New test case for a different input value to items
+    it('should display correct sorted items when provided', () => {
+        const newItems = ['Option 2', 'Option 3', 'Option 1'];
+        fixture.componentRef.setInput('items', newItems);
+        fixture.detectChanges();
+
+        const menu = fixture.debugElement.query(By.css('.menu'));
+        expect(menu).toBeTruthy();
+        // console.warn(menu.nativeElement)
+        const [selectedList, unselectedList] = menu.queryAll(By.css('ul'))
+        expect(selectedList).toBeTruthy();
+        expect(unselectedList).toBeTruthy();
+        const selectedItems = selectedList.queryAll(By.css('li'));
+        const unselectedItems = unselectedList.queryAll(By.css('li'));
+        expect(selectedItems.length).toEqual(0);
+        expect(unselectedItems.length).toEqual(3);
+
+        unselectedItems.forEach((item, index) => {
+            expect(item.nativeElement.textContent.trim()).toEqual(`Option ${index + 1}`);
+        })
+    });
+
+  // New test case for a different input value to items
+  it('should apply preselected items', () => {
+    const newItems = ['Option 2', 'Option 3', 'Option 4', 'Option 1'];
+    const newInitiallySelected = ['Option 2', 'Option 4'];
+    fixture.componentRef.setInput('items', newItems);
+    fixture.componentRef.setInput('initiallySelected', newInitiallySelected);
+    fixture.detectChanges();
+
+    const menu = fixture.debugElement.query(By.css('.menu'));
+    expect(menu).toBeTruthy();
+    // console.warn(menu.nativeElement)
+    const [selectedList, unselectedList] = menu.queryAll(By.css('ul'))
+    expect(selectedList).toBeTruthy();
+    expect(unselectedList).toBeTruthy();
+    const selectedItems = selectedList.queryAll(By.css('li'));
+    const unselectedItems = unselectedList.queryAll(By.css('li'));
+    expect(selectedItems.length).toEqual(2);
+    expect(unselectedItems.length).toEqual(2);
+
+    unselectedItems.forEach((item, index) => {
+      expect(item.nativeElement.textContent.trim()).toEqual(`Option ${2 * index + 1}`);
+    })
+    selectedItems.forEach((item, index) => {
+      expect(item.nativeElement.textContent.trim()).toEqual(`Option ${2 * index + 2}`);
+    })
+  });
 });

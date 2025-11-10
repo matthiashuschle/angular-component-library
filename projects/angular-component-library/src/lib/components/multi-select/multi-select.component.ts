@@ -8,6 +8,7 @@ import {
     Input,
     OnChanges,
     Output,
+    SimpleChanges,
     ViewChild
 } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -50,6 +51,7 @@ export class MultiSelectComponent implements OnChanges {
     @Input() filterPlaceholder?: string;
     @Input() backgroundColor?: string;
     @Input() noPadding?: boolean = false;
+    @Input() initiallySelected: string[] = [];
 
     @Output() itemsSelected = new EventEmitter<string[]>();
 
@@ -66,9 +68,20 @@ export class MultiSelectComponent implements OnChanges {
 
     constructor(private changedDetectorRef: ChangeDetectorRef) {}
 
-    ngOnChanges() {
+    ngOnChanges(changes: SimpleChanges): void {
         this.selectedItems = [];
+        // sort and deep copy
+        this.items = this.getSortedList(JSON.parse(JSON.stringify(this.items)));
+        // deep copy for later reset
         this.itemsBefore = JSON.parse(JSON.stringify(this.items));
+        this.initiallySelected.forEach((item) => {
+            this.selectedItems.push(item);
+            this.items = this.items.filter((el) => el !== item);
+        });
+        if (this.selectedItems.length > 0) {
+            this.changedDetectorRef.detectChanges();
+            this.itemsSelected.emit(this.selectedItems);
+        }
     }
 
     /**
